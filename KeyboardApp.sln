@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyboardApp", "BlankApp2\KeyboardApp.csproj", "{17FD079C-5756-47EA-8DC9-8D530941DF1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17FD079C-5756-47EA-8DC9-8D530941DF1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17FD079C-5756-47EA-8DC9-8D530941DF1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17FD079C-5756-47EA-8DC9-8D530941DF1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17FD079C-5756-47EA-8DC9-8D530941DF1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67810B4C-79E2-44AA-AF4D-C6B28DDE1896}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,258 @@
+﻿<Window x:Class="KeyBoardApp.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:prism="http://prismlibrary.com/" Width="480" Height="225" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        WindowStyle="None" ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="Manual"
+        AllowsTransparency="True" Topmost="True"
+        prism:ViewModelLocator.AutoWireViewModel="True">
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="Opacity" Value="{Binding Opacity}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsShowDisp}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Window.Resources>
+        <System:Double x:Key="defaultKeySize">30</System:Double>
+        <Style TargetType="Border" x:Key="keyBorder">
+            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Width" Value="{StaticResource defaultKeySize}"/>
+            <Setter Property="Height" Value="{StaticResource defaultKeySize}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsPress}" Value="True">
+                    <Setter Property="Background" Value="SteelBlue"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_TAB">
+                    <Setter Property="Width" Value="45"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_CAPITAL">
+                    <Setter Property="Width" Value="60"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_LSHIFT">
+                    <Setter Property="Width" Value="75"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_RSHIFT">
+                    <Setter Property="Width" Value="79"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_BACK">
+                    <Setter Property="Width" Value="60"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_DC">
+                    <Setter Property="Width" Value="45"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_RETURN">
+                    <Setter Property="Width" Value="62"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}" Value="VK_SPACE">
+                    <Setter Property="Width" Value="316"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style TargetType="ContentControl" x:Key="keyCtrl">
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Border Style="{StaticResource keyBorder}">
+                            <Grid>
+                                <TextBlock Text="{Binding KeyName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <!--<TextBlock Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>-->
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+           
+        </Style>
+    </Window.Resources>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding UnloadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <!--<ItemsControl ItemsSource="{Binding MyKeyStatusList}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Border Width="70" Height="30" Style="{StaticResource keyBorder}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Value.KeyName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Value.IsPress}"/>
+                    </StackPanel>
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>-->
+
+
+    <StackPanel>
+        <StackPanel.Resources>
+            <Style TargetType="ContentControl" BasedOn="{StaticResource keyCtrl}"/>
+        </StackPanel.Resources>
+
+        <Grid>
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style x:Key="iconBtn" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                        <Setter Property="Padding" Value="2 0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="2 0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="{materialDesign:PackIcon Kind=Video}" Command="{Binding CmdCaptureStart}" ToolTip="녹화">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource iconBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCapture}" Value="true">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="{materialDesign:PackIcon Kind=Stop}" Command="{Binding CmdCaptureStop}" IsEnabled="{Binding IsCapture}" Style="{StaticResource iconBtn}" ToolTip="정지"/>
+                <Button Content="{materialDesign:PackIcon Kind=Play}" Command="{Binding CmdCapturePlay}" Style="{StaticResource iconBtn}" ToolTip="PLAY"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Slider TickFrequency="0.1" Orientation="Horizontal" Minimum="0.2" Maximum="1" Width="80" Value="{Binding Opacity}" VerticalAlignment="Center"
+                        ToolTip="투명도"/>
+                <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" Margin="3" Cursor="Hand" Background="{StaticResource MaterialDesignPaper}"
+                                         ToolTip="종료">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <i:InvokeCommandAction Command="{Binding CmdExitMouseOver}" CommandParameter="True"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseLeave">
+                            <i:InvokeCommandAction Command="{Binding CmdExitMouseOver}"  CommandParameter="False"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseDown">
+                            <i:InvokeCommandAction Command="{Binding CmdExit}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <materialDesign:PackIcon.Style>
+                        <Style TargetType="materialDesign:PackIcon">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="Red"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </materialDesign:PackIcon.Style>
+                </materialDesign:PackIcon>
+            </StackPanel>
+        </Grid>
+        
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_ESCAPE]}" Tag="VK_ESCAPE"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F1]}" Margin="21 0 0 0"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F2]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F3]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F4]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F5]}" Margin="21 0 0 0"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F6]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F7]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F8]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F9]}" Margin="21 0 0 0"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F10]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F11]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F12]}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_C0]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_1]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_2]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_3]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_4]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_5]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_6]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_7]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_8]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_9]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_0]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BD]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BB]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BACK]}" Tag="VK_BACK"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_TAB]}" Tag="VK_TAB"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_Q]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_W]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_E]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_R]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_T]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_Y]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_U]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_I]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_O]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_P]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_DB]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_DD]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_DC]}" Tag="VK_DC"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_CAPITAL]}" Tag="VK_CAPITAL"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_A]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_S]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_D]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_F]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_G]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_H]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_J]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_K]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_L]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BA]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_DE]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_RETURN]}" Tag="VK_RETURN"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_LSHIFT]}" Tag="VK_LSHIFT"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_Z]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_X]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_C]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_V]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_B]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_N]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_M]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BC]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BE]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BE]}"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_BF]}" Tag="VK_RSHIFT"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding MyKeyStatusList[VK_LCONTROL]}" Tag="VK_LCONTROL"/>
+            <ContentControl/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_LMENU]}" Tag="VK_LMENU"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_SPACE]}" Tag="VK_SPACE"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_RMENU]}" Tag="VK_RMENU"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_RCONTROL]}" Tag="VK_RCONTROL"/>
+        </StackPanel>
+    </StackPanel>
+    
+</Window>

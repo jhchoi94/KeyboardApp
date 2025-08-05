@@ -242,7 +242,7 @@
             <ContentControl Content="{Binding MyKeyStatusList[VK_BC]}"/>
             <ContentControl Content="{Binding MyKeyStatusList[VK_BE]}"/>
             <ContentControl Content="{Binding MyKeyStatusList[VK_BF]}"/>
-            <ContentControl Content="{Binding MyKeyStatusList[VK_BF]}" Tag="VK_RSHIFT"/>
+            <ContentControl Content="{Binding MyKeyStatusList[VK_RSHIFT]}" Tag="VK_RSHIFT"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">

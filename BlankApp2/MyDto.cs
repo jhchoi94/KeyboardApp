@@ -29,17 +29,17 @@ namespace KeyBoardApp
     #region VirtualKey
     public enum VKeys : int
     {
-        VK_BF = 0xBF,  /// key
-        VK_BE = 0xBE,  //. key
-        VK_BC = 0xBC,  //, key
-        VK_DE = 0xDE,  //' key
-        VK_BA = 0xBA,  //; key
-        VK_DC = 0xDC,  //\ key
-        VK_DD = 0xDD,  //] key
-        VK_DB = 0xDB,  //[ key
-        VK_BB = 0xBB,  //= key
-        VK_BD = 0xBD,  //- key
-        VK_C0 = 0xC0,  //` key
+        VK_BF = 0xBF,  // '/?' key
+        VK_BE = 0xBE,  // '.' key
+        VK_BC = 0xBC,  // ',' key
+        VK_DE = 0xDE,  // apostrophe key
+        VK_BA = 0xBA,  // ';' key
+        VK_DC = 0xDC,  // backslash key
+        VK_DD = 0xDD,  // ']' key
+        VK_DB = 0xDB,  // '[' key
+        VK_BB = 0xBB,  // '=' key
+        VK_BD = 0xBD,  // '-' key
+        VK_C0 = 0xC0,  // '`' key
         VK_LBUTTON = 0x01,  //Left mouse button
         VK_RBUTTON = 0x02,  //Right mouse button
         VK_CANCEL = 0x03,  //Control-break processing

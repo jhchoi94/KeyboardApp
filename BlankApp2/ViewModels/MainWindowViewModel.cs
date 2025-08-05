@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Gma.UserActivityMonitor;
 using Prism.Commands;
 using Prism.Mvvm;
+using System.Diagnostics;
 
 namespace KeyBoardApp.ViewModels
 {
@@ -51,8 +52,8 @@ namespace KeyBoardApp.ViewModels
 
         private static IntPtr hhook = IntPtr.Zero;
 
-        DateTime CaptureStartTime;
-        
+        Stopwatch captureWatch;
+
         public List<(KeyDto keyDto, TimeSpan keyTime)> KeyHist { get; set; }
         public List<(MouseDto mouseDto, TimeSpan mouseTime)> MouseHist { get; set; }
         public Dictionary<string, KeyDto> MyKeyStatusList { get; set; }
@@ -141,17 +142,17 @@ namespace KeyBoardApp.ViewModels
                 isMouseDown = false;
                 MouseHistAdd(VMouse.VM_MOUSE_UP, e); 
             };
-            HookManager.MouseDown += (s, e) => 
+            HookManager.MouseDown += (s, e) =>
             {
                 isMouseDown = true;
-                MouseHistAdd(VMouse.VM_MOUSE_DOWN, e); 
+                MouseHistAdd(VMouse.VM_MOUSE_DOWN, e);
             };
         }
 
         private void MouseHistAdd(VMouse mouseEventType, System.Windows.Forms.MouseEventArgs e)
         {
             if (IsCapture)
-                MouseHist.Add((new MouseDto { MouseType = mouseEventType, MousePoint = e.Location }, DateTime.Now - CaptureStartTime));
+                MouseHist.Add((new MouseDto { MouseType = mouseEventType, MousePoint = e.Location }, captureWatch.Elapsed));
         }
         #endregion
 
@@ -217,7 +218,7 @@ namespace KeyBoardApp.ViewModels
                     dic[vKey].IsPress = (int)wParam == 257 || (int)wParam == 261 ? false : true;
                     //Console.WriteLine($"{code}, {(int)wParam}, {lParam}, {vKey}, {dic[vKey].IsPress}");
                     if (mainVM.isCapture)
-                        mainVM.KeyHist.Add((new KeyDto { KeyName = vKey, IsPress = dic[vKey].IsPress, Key = dic[vKey].Key }, DateTime.Now - mainVM.CaptureStartTime));
+                        mainVM.KeyHist.Add((new KeyDto { KeyName = vKey, IsPress = dic[vKey].IsPress, Key = dic[vKey].Key }, mainVM.captureWatch.Elapsed));
                 }
                 return CallNextHookEx(hhook, code, (int)wParam, lParam);
             }
@@ -233,7 +234,7 @@ namespace KeyBoardApp.ViewModels
         {
             KeyHist.Clear();
             MouseHist.Clear();
-            CaptureStartTime = DateTime.Now;
+            captureWatch = Stopwatch.StartNew();
             IsCapture = true;
         }
         #endregion
@@ -246,6 +247,7 @@ namespace KeyBoardApp.ViewModels
         void ExecuteCmdCaptureStop()
         {
             IsCapture = false;
+            captureWatch?.Stop();
         }
         #endregion
 
@@ -260,32 +262,33 @@ namespace KeyBoardApp.ViewModels
 
             if (IsPlay)
             {
-                var beforeSpan = new TimeSpan();
-                var allCaptureList = MouseHist.Select(g => new EventOrderDto { EventType = EventOrder.MOUSE, MouseEvt = g }).ToList();
-                allCaptureList.AddRange(KeyHist.Select(g => new EventOrderDto { EventType = EventOrder.KEYBOARD, KeyEvt = g }));
+                var allCaptureList = MouseHist
+                    .Select(g => new EventOrderDto { EventType = EventOrder.MOUSE, MouseEvt = g, EventTime = g.mouseTime })
+                    .ToList();
+                allCaptureList.AddRange(
+                    KeyHist.Select(g => new EventOrderDto { EventType = EventOrder.KEYBOARD, KeyEvt = g, EventTime = g.keyTime }));
 
-                allCaptureList = allCaptureList.OrderBy(g => g.MouseEvt.mouseTime + g.KeyEvt.keyTime).ToList();
-                
+                allCaptureList = allCaptureList.OrderBy(g => g.EventTime).ToList();
+
+                var playWatch = Stopwatch.StartNew();
+
                 foreach (var item in allCaptureList)
                 {
                     if (!IsPlay) break;
 
+                    var delay = item.EventTime - playWatch.Elapsed;
+                    if (delay > TimeSpan.Zero)
+                        await Task.Delay(delay);
+
                     switch (item.EventType)
                     {
                         case EventOrder.KEYBOARD:
-                            var keyDelay = Convert.ToInt32((item.KeyEvt.keyTime - beforeSpan).TotalMilliseconds);
-                            await Task.Delay(keyDelay);
-                            beforeSpan = item.KeyEvt.keyTime;
                             MyKeyStatusList[item.KeyEvt.keyDto.KeyName].IsPress = item.KeyEvt.keyDto.IsPress;
                             keybd_event(byte.Parse(((int)item.KeyEvt.keyDto.Key).ToString()), 0x45, (uint)(item.KeyEvt.keyDto.IsPress ? WM_KEYDOWN : WM_KEYUP), UIntPtr.Zero);
 
                             Console.WriteLine($"{DateTime.Now} : 키보드 온");
                             break;
                         case EventOrder.MOUSE:
-                            var MouseDelay = Convert.ToInt32((item.MouseEvt.mouseTime - beforeSpan).TotalMilliseconds);
-                            await Task.Delay(MouseDelay);
-                            beforeSpan = item.MouseEvt.mouseTime;
-
                             System.Windows.Forms.Cursor.Position = item.MouseEvt.mouseDto.MousePoint;
                             switch (item.MouseEvt.mouseDto.MouseType)
                             {
@@ -293,11 +296,7 @@ namespace KeyBoardApp.ViewModels
                                     mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
                                     break;
                                 case VMouse.VM_MOUSE_DOWN:
-
                                     mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-                                    break;
-                                //case VMouse.VM_MOUSE_MOVE:
-                                //    System.Windows.Forms.Cursor.Position = item.MouseEvt.mouseDto.MousePoint;
                                     break;
                                 default:
                                     break;
@@ -307,7 +306,7 @@ namespace KeyBoardApp.ViewModels
                             break;
                         default:
                             break;
-                    }                   
+                    }
                 }
             }
 

@@ -172,5 +172,6 @@ namespace KeyBoardApp
         public EventOrder EventType { get; set; }
         public (KeyDto keyDto, TimeSpan keyTime) KeyEvt { get; set; }
         public (MouseDto mouseDto, TimeSpan mouseTime) MouseEvt { get; set; }
+        public TimeSpan EventTime { get; set; }
     }
 }
